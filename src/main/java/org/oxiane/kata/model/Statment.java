@@ -1,6 +1,7 @@
 package org.oxiane.kata.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Statment {
 
@@ -47,5 +48,18 @@ public class Statment {
 	public double getBalance() {
 		return balance;
 	}
+
+	public String print() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(String.format("%-10s", this.getStatmentType().name())).append("\t|\t")
+		.append(this.getAmount()) .append("\t|\t")
+		.append(this.creationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\t|\t")
+		.append(this.getBalance()) 
+		.append("\n");
+
+		return sb.toString();
+	}
+
 
 }

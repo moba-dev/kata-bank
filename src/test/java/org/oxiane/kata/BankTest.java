@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.oxiane.kata.ds.ArrayListAccountRepositoryImpl;
@@ -15,6 +17,8 @@ import org.oxiane.kata.repository.AccountRepository;
 import org.oxiane.kata.repository.StatmentRepository;
 import org.oxiane.kata.service.AccountService;
 import org.oxiane.kata.service.AccountServiceImpl;
+import org.oxiane.kata.service.StatmentService;
+import org.oxiane.kata.service.StatmentServiceImpl;
 
 public class BankTest {
 	
@@ -31,8 +35,9 @@ public class BankTest {
 		AccountRepository accountRepository = new ArrayListAccountRepositoryImpl();
 
 		AccountService accountService = new AccountServiceImpl(accountRepository, statmentRepository);
+		StatmentService statmentService = new StatmentServiceImpl(statmentRepository);
 
-		bank = new Bank(accountService);
+		bank = new Bank(accountService, statmentService);
 		bank.createAccount(DEFAULT_ACCOUNT_ID, DEFAULT_BALANCE);
 	}
 
@@ -70,6 +75,23 @@ public class BankTest {
 		bank.createAccount(id, DEFAULT_BALANCE);
 		// Then
 		assertThrows(AccountAlreadyExistException.class, () -> bank.createAccount(id, 5000));
+	}
+
+	@Test
+	public void should_print_statments_of_accounts() throws AccountNotFoundException, InsufficientBalanceException, AccountAlreadyExistException {
+		// Given id
+		String id = "fr01-0001";
+		// When
+		bank.createAccount(id, 1000);
+		bank.depositMoneyToAccount(id, 1000);
+		bank.withdrawMoneyFromAccount(id, 500);
+		// Then
+		double balance = bank.getBalanceOf(id);
+		assertThat(balance, equalTo(1500d));
+
+		LocalDate since= LocalDate.of(2022, 1, 1);
+		bank.printStatmentsOf(id, since);
+		bank.printStatmentsOf(DEFAULT_ACCOUNT_ID, since);
 	}
 
 }
