@@ -22,6 +22,12 @@ public class Statment {
 		this.balance = balance;
 	}
 
+	public Statment(Account account, StatmentType statmentType, double amount) {
+		this(account.getId(), statmentType, amount, account.balance());
+	}
+
+
+
 	public String getAccountId() {
 		return accountId;
 	}
