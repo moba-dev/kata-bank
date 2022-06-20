@@ -41,4 +41,7 @@ of persistence model (data base, in memory, etc...)
 
 The bank program is decoulped to the two others too and it only interact with Service layer.
 
+Uml diagram of classes is shown below
+
+![Simple class diagram](assets/uml-diagram.png)
 
