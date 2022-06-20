@@ -3,28 +3,39 @@ package org.oxiane.kata;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.oxiane.kata.ds.ArrayListAccountRepositoryImpl;
 import org.oxiane.kata.ds.ArrayListStatmentRepositoryImpl;
 import org.oxiane.kata.exceptions.AccountAlreadyExistException;
 import org.oxiane.kata.exceptions.AccountNotFoundException;
 import org.oxiane.kata.exceptions.InsufficientBalanceException;
 import org.oxiane.kata.model.Account;
+import org.oxiane.kata.model.Statment;
+import org.oxiane.kata.model.StatmentType;
 import org.oxiane.kata.repository.AccountRepository;
 import org.oxiane.kata.repository.StatmentRepository;
 import org.oxiane.kata.service.AccountService;
 import org.oxiane.kata.service.AccountServiceImpl;
+import org.oxiane.kata.service.StatmentService;
+import org.oxiane.kata.service.StatmentServiceImpl;
 
 public class AccountServiceTest {
 
 	static final String DEFAULT_ACCOUNT_ID = "abcd-efgh";
 	static final double DEFAULT_BALANCE = 1000d;
 	
+	private StatmentService statmentService;
 	private AccountService accountService;
 
 
@@ -33,6 +44,7 @@ public class AccountServiceTest {
 		StatmentRepository statmentRepository = new ArrayListStatmentRepositoryImpl();
 		AccountRepository accountRepository = new ArrayListAccountRepositoryImpl();
 
+		this.statmentService = new StatmentServiceImpl(statmentRepository);
 		this.accountService = new AccountServiceImpl(accountRepository, statmentRepository);
 	}
 
@@ -160,6 +172,39 @@ public class AccountServiceTest {
 
 		// Then
 		assertThat(optAcc.isPresent(), is(false));
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {1,2,3,4,5,6,7,8,9,10})
+	public void should_create_10_accounts_with_4_statments_in_each_and_test_their_type_and_print_them(int index) 
+			throws AccountAlreadyExistException, AccountNotFoundException, InsufficientBalanceException {
+		// Given index
+
+		// When
+		String id = "acc"+index;
+		Account acc = new Account(id, index);
+		this.accountService.create(acc);
+		this.accountService.depositMoney(id, 10*index);
+		this.accountService.depositMoney(id, 100*index);
+		this.accountService.withdrawMoney(id, index);
+
+		// Then
+		StringBuilder sb = null;
+
+		List<Statment> statments = this.statmentService.getStatmentsByAccount(id);
+		assertThat(statments.size(), is(4));
+
+		Collections.sort(statments, (stmt1, stmt2) -> stmt1.getCreationDate().compareTo(stmt2.getCreationDate()));
+		assertAll("statmentstype",
+			() -> assertThat(statments.get(0).getStatmentType(), equalTo(StatmentType.DEPOSIT)),
+			() -> assertThat(statments.get(1).getStatmentType(), equalTo(StatmentType.DEPOSIT)),
+			() -> assertThat(statments.get(2).getStatmentType(), equalTo(StatmentType.DEPOSIT)),
+			() -> assertThat(statments.get(3).getStatmentType(), equalTo(StatmentType.WITHDRAW))
+		);
+		LocalDate since= LocalDate.of(2022, 1, 1);
+		sb = this.statmentService.printStatmentsOf(id, since);
+		System.out.println(sb.toString());
+
 	}
 
 
