@@ -27,3 +27,18 @@ Bank account kata focus on these opeations (deposit, withdraw and statment print
 	As a bank client  
 	I want to see the history (operation, date, amount, balance) of my operations  
 
+
+### Solution
+
+This application is designated according to the layered architecture model 
+- Repository
+- Service 
+- Application (Presentation)
+
+All business rules are implemented as service in the service layer witch is independant to the repositroy one.  
+The last one have to respect the repository contract defined in repository interfaces. It can use different kind   
+of persistence model (data base, in memory, etc...)
+
+The bank program is decoulped to the two others too and it only interact with Service layer.
+
+
