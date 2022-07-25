@@ -30,16 +30,15 @@ Bank account kata focus on these opeations (deposit, withdraw and statment print
 
 ### Solution
 
-This application is designated according to the layered architecture model 
-- Repository
-- Service 
-- Application (Presentation)
+This application is designed according to the exadecimal architecture model 
+- SPI and API adapters are located in their respective packages
+- Idem for ports
+- The Bank program use the api to interact with the domain.
 
-All business rules are implemented as service in the service layer witch is independant to the repositroy one.  
-The last one have to respect the repository contract defined in repository interfaces. It can use different kind   
-of persistence model (data base, in memory, etc...)
 
-The bank program is decoulped to the two others too and it only interact with Service layer.
+All business rules are implemented in domain classes `AccoutService` and `StatmentService`.  
+For convenience collections are used as  default repository adapter are implemented to persit objects *Account* & *Statment*.
+
 
 Uml diagram of classes is shown below
 

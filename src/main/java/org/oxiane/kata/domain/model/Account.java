@@ -1,4 +1,4 @@
-package org.oxiane.kata.model;
+package org.oxiane.kata.domain.model;
 
 import org.oxiane.kata.exceptions.InsufficientBalanceException;
 

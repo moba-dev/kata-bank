@@ -1,13 +1,13 @@
-package org.oxiane.kata.service;
+package org.oxiane.kata.port.api;
 
 import java.util.Optional;
 
+import org.oxiane.kata.domain.model.Account;
 import org.oxiane.kata.exceptions.AccountAlreadyExistException;
 import org.oxiane.kata.exceptions.AccountNotFoundException;
 import org.oxiane.kata.exceptions.InsufficientBalanceException;
-import org.oxiane.kata.model.Account;
 
-public interface AccountService {
+public interface AccountServicePort {
 
 	boolean create(Account account) throws AccountAlreadyExistException;
 

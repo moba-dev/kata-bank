@@ -2,7 +2,7 @@ package org.oxiane.kata.exceptions;
 
 public class AccountException extends Exception {
 
-	private static final long serialVersionUID = -4838096677507173687L;
+	private static final long serialVersionUID = 2340211557301082698L;
 
 	private String accountId;
 

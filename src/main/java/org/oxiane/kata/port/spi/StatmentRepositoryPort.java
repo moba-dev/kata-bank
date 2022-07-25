@@ -1,10 +1,10 @@
-package org.oxiane.kata.repository;
+package org.oxiane.kata.port.spi;
 
 import java.util.List;
 
-import org.oxiane.kata.model.Statment;
+import org.oxiane.kata.domain.model.Statment;
 
-public interface StatmentRepository {
+public interface StatmentRepositoryPort {
 
 
 	boolean save(Statment statment);

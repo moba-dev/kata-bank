@@ -6,7 +6,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,37 +16,35 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.oxiane.kata.ds.ArrayListAccountRepositoryImpl;
-import org.oxiane.kata.ds.ArrayListStatmentRepositoryImpl;
+import org.oxiane.kata.adapter.spi.DefaultAccountRepositoryAdapter;
+import org.oxiane.kata.adapter.spi.DefaultStatmentRepositoryAdapter;
+import org.oxiane.kata.domain.model.Account;
+import org.oxiane.kata.domain.model.Statment;
+import org.oxiane.kata.domain.model.StatmentType;
+import org.oxiane.kata.domain.service.AccountService;
+import org.oxiane.kata.domain.service.StatmentService;
 import org.oxiane.kata.exceptions.AccountAlreadyExistException;
 import org.oxiane.kata.exceptions.AccountNotFoundException;
 import org.oxiane.kata.exceptions.InsufficientBalanceException;
-import org.oxiane.kata.model.Account;
-import org.oxiane.kata.model.Statment;
-import org.oxiane.kata.model.StatmentType;
-import org.oxiane.kata.repository.AccountRepository;
-import org.oxiane.kata.repository.StatmentRepository;
-import org.oxiane.kata.service.AccountService;
-import org.oxiane.kata.service.AccountServiceImpl;
-import org.oxiane.kata.service.StatmentService;
-import org.oxiane.kata.service.StatmentServiceImpl;
+import org.oxiane.kata.port.spi.AccountRepositoryPort;
+import org.oxiane.kata.port.spi.StatmentRepositoryPort;
 
 public class AccountServiceTest {
 
 	static final String DEFAULT_ACCOUNT_ID = "abcd-efgh";
 	static final double DEFAULT_BALANCE = 1000d;
 	
-	private StatmentService statmentService;
 	private AccountService accountService;
+	private StatmentService statmentService;
 
 
 	@BeforeEach
 	public void intialize() {
-		StatmentRepository statmentRepository = new ArrayListStatmentRepositoryImpl();
-		AccountRepository accountRepository = new ArrayListAccountRepositoryImpl();
+		AccountRepositoryPort accountRepository = new DefaultAccountRepositoryAdapter(new ArrayList<>());
+		StatmentRepositoryPort statmentRepository = new DefaultStatmentRepositoryAdapter(new ArrayList<>());
 
-		this.statmentService = new StatmentServiceImpl(statmentRepository);
-		this.accountService = new AccountServiceImpl(accountRepository, statmentRepository);
+		this.accountService = new AccountService(accountRepository, statmentRepository);
+		this.statmentService = new StatmentService(statmentRepository);
 	}
 
 	@Test
@@ -61,19 +60,6 @@ public class AccountServiceTest {
 		assertThat(acc.balance(), equalTo(DEFAULT_BALANCE));
 		assertThat(value, is(true));
 
-	}
-
-	@Test
-	public void should_throw_AccountAlreadyExistException_when_creating_account_twice() 
-			throws InsufficientBalanceException, AccountAlreadyExistException {
-
-		// Given default account 
-		Account account = new Account(DEFAULT_ACCOUNT_ID);
-		this.accountService.create(account);
-
-		// When creating twice
-		// Then
-		assertThrows(AccountAlreadyExistException.class, () -> this.accountService.create(account));
 	}
 
 	@Test
@@ -201,7 +187,7 @@ public class AccountServiceTest {
 			() -> assertThat(statments.get(2).getStatmentType(), equalTo(StatmentType.DEPOSIT)),
 			() -> assertThat(statments.get(3).getStatmentType(), equalTo(StatmentType.WITHDRAW))
 		);
-		LocalDate since= LocalDate.of(2022, 1, 1);
+		LocalDateTime since= LocalDateTime.of(2022, 1, 1, 0, 0);
 		sb = this.statmentService.printStatmentsOf(id, since);
 		System.out.println(sb.toString());
 

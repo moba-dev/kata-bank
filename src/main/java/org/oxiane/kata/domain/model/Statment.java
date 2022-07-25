@@ -1,6 +1,6 @@
-package org.oxiane.kata.model;
+package org.oxiane.kata.domain.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Statment {
@@ -11,7 +11,7 @@ public class Statment {
 
 	private double amount;
 
-	private LocalDate creationDate;
+	private LocalDateTime creationDate;
 
 	private double balance;
 
@@ -19,7 +19,7 @@ public class Statment {
 		this.accountId = accountId;
 		this.statmentType = statmentType;
 		this.amount = amount;
-		this.creationDate = LocalDate.now();
+		this.creationDate = LocalDateTime.now();
 		this.balance = balance;
 	}
 
@@ -41,12 +41,18 @@ public class Statment {
 		return amount;
 	}
 
-	public LocalDate getCreationDate() {
+	public LocalDateTime getCreationDate() {
 		return creationDate;
 	}
 
 	public double getBalance() {
 		return balance;
+	}
+
+
+	public Statment updateCreationDate(LocalDateTime creationDate) {
+		this.creationDate = creationDate;
+		return this;
 	}
 
 	public String print() {
@@ -61,5 +67,12 @@ public class Statment {
 		return sb.toString();
 	}
 
+	@Override
+	public String toString() {
+		return "Statment [statmentType=" + statmentType + ", amount=" + amount + ", creationDate=" + creationDate
+				+ ", balance=" + balance + "]";
+	}
 
+
+	
 }

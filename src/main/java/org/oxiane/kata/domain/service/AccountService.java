@@ -1,31 +1,31 @@
-package org.oxiane.kata.service;
+package org.oxiane.kata.domain.service;
 
 import java.util.Optional;
 
+import org.oxiane.kata.domain.model.Account;
+import org.oxiane.kata.domain.model.Statment;
+import org.oxiane.kata.domain.model.StatmentType;
 import org.oxiane.kata.exceptions.AccountAlreadyExistException;
 import org.oxiane.kata.exceptions.AccountNotFoundException;
 import org.oxiane.kata.exceptions.InsufficientBalanceException;
-import org.oxiane.kata.model.Account;
-import org.oxiane.kata.model.Statment;
-import org.oxiane.kata.model.StatmentType;
-import org.oxiane.kata.repository.AccountRepository;
-import org.oxiane.kata.repository.StatmentRepository;
+import org.oxiane.kata.port.spi.AccountRepositoryPort;
+import org.oxiane.kata.port.spi.StatmentRepositoryPort;
 
-public class AccountServiceImpl implements AccountService {
+public class AccountService  {
 
-	private AccountRepository accountRepository;
+	private AccountRepositoryPort accountRepository;
 
-	private StatmentRepository statmentRepository;
+	private StatmentRepositoryPort statmentRepository;
 
 
 
-	public AccountServiceImpl(AccountRepository accountRepository, StatmentRepository statmentRepository) {
+	public AccountService(AccountRepositoryPort accountRepository, StatmentRepositoryPort statmentRepository) {
 		this.accountRepository = accountRepository;
 		this.statmentRepository = statmentRepository;
 	}
 
 
-	@Override
+	//@Override
 	public boolean create(Account account) throws AccountAlreadyExistException {
 		if (this.accountRepository.exists(account.getId())) {
 			throw new AccountAlreadyExistException(account.getId(), "This account already exists!");
@@ -37,13 +37,13 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 
-	@Override
+	//@Override
 	public Optional<Account> findAccount(String accountId) {
 		return this.accountRepository.findById(accountId);
 	}
 
 
-	@Override
+	//@Override
 	public boolean depositMoney(String accountId, double amount) throws AccountNotFoundException {
 		Account account = this.accountRepository.findById(accountId)
 				.orElseThrow(() -> new AccountNotFoundException(accountId, "Account"));
@@ -55,7 +55,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 
-	@Override
+	//@Override
 	public boolean withdrawMoney(String accountId, double amount) throws AccountNotFoundException, InsufficientBalanceException {
 		Account account = this.accountRepository.findById(accountId)
 				.orElseThrow(() -> new AccountNotFoundException(accountId, "Account not exists id=" + accountId));

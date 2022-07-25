@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.oxiane.kata.domain.model.Account;
 import org.oxiane.kata.exceptions.InsufficientBalanceException;
-import org.oxiane.kata.model.Account;
 
 
 public class AccountTest {

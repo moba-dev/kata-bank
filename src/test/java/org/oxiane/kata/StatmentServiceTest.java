@@ -4,17 +4,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.oxiane.kata.ds.ArrayListStatmentRepositoryImpl;
-import org.oxiane.kata.model.Statment;
-import org.oxiane.kata.model.StatmentType;
-import org.oxiane.kata.service.StatmentService;
-import org.oxiane.kata.service.StatmentServiceImpl;
+import org.oxiane.kata.adapter.spi.DefaultStatmentRepositoryAdapter;
+import org.oxiane.kata.domain.model.Statment;
+import org.oxiane.kata.domain.model.StatmentType;
+import org.oxiane.kata.domain.service.StatmentService;
+import org.oxiane.kata.port.spi.StatmentRepositoryPort;
 
 public class StatmentServiceTest {
 
@@ -26,7 +27,8 @@ public class StatmentServiceTest {
 
 	@BeforeEach
 	public void initialize() {
-		this.statmentService = new StatmentServiceImpl(new ArrayListStatmentRepositoryImpl());
+		StatmentRepositoryPort repositoryPort = new DefaultStatmentRepositoryAdapter(new ArrayDeque<>());
+		this.statmentService = new StatmentService(repositoryPort);
 	}
 
 
@@ -71,7 +73,7 @@ public class StatmentServiceTest {
 		assertThat(statments.get(3).getAmount(), equalTo(50d));
 		assertThat(statments.get(3).getBalance(), equalTo(DEFAULT_BALANCE + 500 - 300 + 50));
 
-		LocalDate since= LocalDate.of(2022, 1, 1);
+		LocalDateTime since= LocalDateTime.of(2022, 1, 1, 0, 0, 0);
 		sb = this.statmentService.printStatmentsOf(accId, since);
 
 		System.out.println(sb.toString());

@@ -1,10 +1,10 @@
-package org.oxiane.kata.repository;
+package org.oxiane.kata.port.spi;
 
 import java.util.Optional;
 
-import org.oxiane.kata.model.Account;
+import org.oxiane.kata.domain.model.Account;
 
-public interface AccountRepository {
+public interface AccountRepositoryPort {
 
 	boolean save(Account account);
 

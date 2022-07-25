@@ -4,21 +4,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.oxiane.kata.ds.ArrayListAccountRepositoryImpl;
-import org.oxiane.kata.ds.ArrayListStatmentRepositoryImpl;
+import org.oxiane.kata.adapter.api.AccountServiceAdapter;
+import org.oxiane.kata.adapter.api.StatmentServiceAdapter;
+import org.oxiane.kata.adapter.spi.DefaultAccountRepositoryAdapter;
+import org.oxiane.kata.adapter.spi.DefaultStatmentRepositoryAdapter;
+import org.oxiane.kata.domain.model.Statment;
+import org.oxiane.kata.domain.service.AccountService;
+import org.oxiane.kata.domain.service.StatmentService;
 import org.oxiane.kata.exceptions.AccountAlreadyExistException;
 import org.oxiane.kata.exceptions.AccountNotFoundException;
 import org.oxiane.kata.exceptions.InsufficientBalanceException;
-import org.oxiane.kata.repository.AccountRepository;
-import org.oxiane.kata.repository.StatmentRepository;
-import org.oxiane.kata.service.AccountService;
-import org.oxiane.kata.service.AccountServiceImpl;
-import org.oxiane.kata.service.StatmentService;
-import org.oxiane.kata.service.StatmentServiceImpl;
+import org.oxiane.kata.port.spi.AccountRepositoryPort;
+import org.oxiane.kata.port.spi.StatmentRepositoryPort;
 
 public class BankTest {
 	
@@ -31,13 +34,15 @@ public class BankTest {
 
 	@BeforeEach
 	public void initilize() throws AccountAlreadyExistException {
-		StatmentRepository statmentRepository = new ArrayListStatmentRepositoryImpl();
-		AccountRepository accountRepository = new ArrayListAccountRepositoryImpl();
+		StatmentRepositoryPort statmentRepository = new DefaultStatmentRepositoryAdapter(new HashSet<Statment>());
+		AccountRepositoryPort accountRepository = new DefaultAccountRepositoryAdapter(new ArrayList<>());
 
-		AccountService accountService = new AccountServiceImpl(accountRepository, statmentRepository);
-		StatmentService statmentService = new StatmentServiceImpl(statmentRepository);
+		AccountServiceAdapter accountAdpter = new AccountServiceAdapter(
+				new AccountService(accountRepository, statmentRepository));
+		StatmentServiceAdapter statmentAdapter = new StatmentServiceAdapter(
+				new StatmentService(statmentRepository));
 
-		bank = new Bank(accountService, statmentService);
+		bank = new Bank(accountAdpter, statmentAdapter);
 		bank.createAccount(DEFAULT_ACCOUNT_ID, DEFAULT_BALANCE);
 	}
 
@@ -89,7 +94,7 @@ public class BankTest {
 		double balance = bank.getBalanceOf(id);
 		assertThat(balance, equalTo(1500d));
 
-		LocalDate since= LocalDate.of(2022, 1, 1);
+		LocalDateTime since= LocalDateTime.of(2022, 1, 1, 0, 0, 0);
 		bank.printStatmentsOf(id, since);
 		bank.printStatmentsOf(DEFAULT_ACCOUNT_ID, since);
 	}
